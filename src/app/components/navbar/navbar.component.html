@@ -1,0 +1,32 @@
+<div class="flex justify-around py-3 px-2">
+  <h1
+    class="text-2xl font-bold hover:text-gray-700 cursor-pointer"
+    routerLink="/"
+  >
+    Gestión de tareas y proyectos
+  </h1>
+  <div class="flex gap-10 font-semibold">
+    <button
+      mat-button
+      routerLink="/projects"
+      class="hover:text-gray-700 cursor-pointer"
+    >
+      Proyectos
+    </button>
+    <button
+      mat-button
+      routerLink="/tasks"
+      class="hover:text-gray-700 cursor-pointer"
+    >
+      Tareas
+    </button>
+
+    <button
+      mat-button
+      (click)="logout()"
+      class="hover:text-gray-700 cursor-pointer"
+    >
+      Deslogear
+    </button>
+  </div>
+</div>

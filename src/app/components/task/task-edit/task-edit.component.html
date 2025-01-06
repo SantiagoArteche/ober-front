@@ -1,0 +1,147 @@
+<div
+  class="min-h-screen bg-indigo-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full space-y-6">
+    <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">
+      Editar Tarea
+    </h2>
+
+    <form
+      [formGroup]="editProjectForm"
+      (ngSubmit)="onSubmit()"
+      class="space-y-6"
+    >
+      <div class="space-y-2">
+        <label for="name" class="block text-sm font-medium text-gray-700">
+          Nombre de la Tarea:
+        </label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div
+          *ngIf="
+            editProjectForm.get('name')?.invalid &&
+            editProjectForm.get('name')?.touched
+          "
+          class="text-sm text-red-600"
+        >
+          El nombre de la tarea es requerido
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label
+          for="description"
+          class="block text-sm font-medium text-gray-700"
+        >
+          Descripción:
+        </label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="3"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        ></textarea>
+        <div
+          *ngIf="
+            editProjectForm.get('description')?.invalid &&
+            editProjectForm.get('description')?.touched
+          "
+          class="text-sm text-red-600"
+        >
+          La descripción es requerida
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label for="assignedTo" class="block text-sm font-medium text-gray-700">
+          ID de los usuarios asignados a la tarea (separados por coma):
+        </label>
+        <input
+          type="text"
+          id="assignedTo"
+          formControlName="assignedTo"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <label for="projectId" class="block text-sm font-medium text-gray-700">
+          ID del Proyecto:
+        </label>
+        <input
+          type="text"
+          id="projectId"
+          formControlName="projectId"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div
+          *ngIf="
+            editProjectForm.get('projectId')?.invalid &&
+            editProjectForm.get('projectId')?.touched
+          "
+          class="text-sm text-red-600"
+        >
+          El ID del proyecto es requerido
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label for="status" class="block text-sm font-medium text-gray-700">
+          Estado:
+        </label>
+        <select
+          id="status"
+          formControlName="status"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        >
+          <option value="">Seleccione un estado</option>
+          <option value="pending">Pendiente</option>
+          <option value="in progress">En Progreso</option>
+          <option value="completed">Completada</option>
+        </select>
+        <div
+          *ngIf="
+            editProjectForm.get('status')?.invalid &&
+            editProjectForm.get('status')?.touched
+          "
+          class="text-sm text-red-600"
+        >
+          El estado es requerido
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label for="endDate" class="block text-sm font-medium text-gray-700">
+          Fecha de Finalización:
+        </label>
+        <input
+          type="date"
+          id="endDate"
+          formControlName="endDate"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <div
+          *ngIf="
+            editProjectForm.get('endDate')?.invalid &&
+            editProjectForm.get('endDate')?.touched
+          "
+          class="text-sm text-red-600"
+        >
+          La fecha de finalización es requerida
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="editProjectForm.invalid"
+        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Guardar Cambios
+      </button>
+    </form>
+  </div>
+</div>
