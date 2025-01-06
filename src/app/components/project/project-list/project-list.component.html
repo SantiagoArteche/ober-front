@@ -21,15 +21,50 @@
     </button>
   </div>
 
+  <div class="mb-6 bg-white p-4 rounded-lg shadow">
+    <form
+      [formGroup]="filterForm"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <div class="w-full">
+        <label for="search" class="block text-sm font-medium text-gray-700"
+          >Buscar proyectos</label
+        >
+        <input
+          id="search"
+          type="text"
+          formControlName="search"
+          placeholder="Nombre o ID del proyecto"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
+      <div class="w-full">
+        <label
+          for="assignedUser"
+          class="block text-sm font-medium text-gray-700"
+          >Usuario asignado</label
+        >
+        <input
+          id="assignedUser"
+          type="text"
+          formControlName="assignedUser"
+          placeholder="ID del usuario"
+          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+    </form>
+  </div>
+
   <div
     class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200"
   >
     <div class="overflow-x-auto">
       <cdk-virtual-scroll-viewport
         itemSize="56"
-        class="h-[500px] md:h-[650px] overflow-auto"
+        class="h-[500px] md:h-[600px] overflow-auto"
       >
-        <table mat-table [dataSource]="projects" class="w-full">
+        <table mat-table [dataSource]="filteredProjects" class="w-full">
           <ng-container matColumnDef="id">
             <th
               mat-header-cell
@@ -41,8 +76,9 @@
             <td mat-cell *matCellDef="let project" class="px-6 py-4">
               <span
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-300 text-gray-800"
-                >{{ project._id }}</span
               >
+                {{ project._id }}
+              </span>
             </td>
           </ng-container>
 
@@ -70,27 +106,29 @@
               Usuarios
             </th>
             <td mat-cell *matCellDef="let project" class="px-6 py-4">
-              @if (project.users?.length > 0) {
-              <div class="flex flex-wrap gap-2">
-                @for (user of project.users.slice(0, 2); track user) {
+              <div
+                *ngIf="project.users?.length > 0"
+                class="flex flex-wrap gap-2"
+              >
                 <span
+                  *ngFor="let user of project.users.slice(0, 2)"
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                 >
                   {{ user }}
                 </span>
-                } @if (project.users.length > 2) {
                 <span
+                  *ngIf="project.users.length > 2"
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
                 >
                   +{{ project.users.length - 2 }}
                 </span>
-                }
               </div>
-              } @else {
-              <span class="text-sm text-gray-500 italic"
-                >Sin usuarios asignados</span
+              <span
+                *ngIf="!project.users?.length"
+                class="text-sm text-gray-500 italic"
               >
-              }
+                Sin usuarios asignados
+              </span>
             </td>
           </ng-container>
 
@@ -103,27 +141,29 @@
               Tareas
             </th>
             <td mat-cell *matCellDef="let project" class="px-6 py-4">
-              @if (project.tasks?.length > 0) {
-              <div class="flex flex-wrap gap-2">
-                @for (task of project.tasks.slice(0, 2); track task) {
+              <div
+                *ngIf="project.tasks?.length > 0"
+                class="flex flex-wrap gap-2"
+              >
                 <span
+                  *ngFor="let task of project.tasks.slice(0, 2)"
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
                 >
                   {{ task._id }}
                 </span>
-                } @if (project.tasks.length > 2) {
                 <span
+                  *ngIf="project.tasks.length > 2"
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
                 >
                   +{{ project.tasks.length - 2 }}
                 </span>
-                }
               </div>
-              } @else {
-              <span class="text-sm text-gray-500 italic"
-                >Sin tareas asignadas</span
+              <span
+                *ngIf="!project.tasks?.length"
+                class="text-sm text-gray-500 italic"
               >
-              }
+                Sin tareas asignadas
+              </span>
             </td>
           </ng-container>
 

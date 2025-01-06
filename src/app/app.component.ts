@@ -31,7 +31,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.router.events.subscribe(() => {
-      const excludedRoutes = ['/login', '/register'];
+      const excludedRoutes = [
+        '/login',
+        '/register',
+        '/login?returnUrl=%2Fprojects',
+        '/login?returnUrl=%2Ftasks',
+      ];
       this.showNavbar = !excludedRoutes.includes(this.router.url);
     });
   }
