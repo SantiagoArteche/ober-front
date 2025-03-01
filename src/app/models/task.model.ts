@@ -12,7 +12,7 @@ export class Task {
     public name: string,
     public description: string,
     public assignedTo: User[] = [],
-    public projectId: string,
+    public projectId: { _id: string; name: string },
     public status: string = STATUS.pending,
     public startDate: Date = new Date(),
     public endDate: Date = new Date()

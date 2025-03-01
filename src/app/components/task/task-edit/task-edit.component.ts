@@ -50,7 +50,7 @@ export class TaskEditComponent implements OnInit {
           name: this.task?.name,
           description: this.task?.description,
           assignedTo: this.task?.assignedTo.join(', '),
-          projectId: this.task?.projectId,
+          projectId: this.task?.projectId._id,
           status: this.task?.status,
           endDate: this.task?.endDate
             ? new Date(endDate).toISOString().split('T')[0]
