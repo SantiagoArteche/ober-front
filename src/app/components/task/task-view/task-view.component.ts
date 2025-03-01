@@ -40,6 +40,7 @@ export class TaskViewComponent implements OnInit {
       this.taskService.getTask(this.taskId).subscribe(
         (task: any) => {
           this.task = task.task;
+          console.log(this.task);
         },
         (error) => {
           console.error('Error al cargar la tarea:', error);

@@ -27,8 +27,8 @@
             <span class="text-gray-800">{{ project._id }}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="font-medium text-gray-600">Proyecto:</span>
-            <span class="text-gray-800">{{ project._id }}</span>
+            <span class="font-medium text-gray-600">Nombre:</span>
+            <span class="text-gray-800">{{ project.name }}</span>
           </div>
         </div>
 
@@ -41,7 +41,7 @@
               <span
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
               >
-                {{ user }}
+                {{ user.name }}
               </span>
               }
             </div>
@@ -57,7 +57,7 @@
               <span
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800"
               >
-                {{ tasks }}
+                {{ tasks.name }}
               </span>
               }
             </div>
