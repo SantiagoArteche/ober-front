@@ -102,9 +102,13 @@ export class ProjectListComponent implements OnInit, OnDestroy {
 
       const matchesAssignedUser =
         !assignedUser ||
-        project.users.some((user: any) =>
-          user.toLowerCase().includes(assignedUser.toLowerCase())
-        );
+        project.users.some((user: any) => {
+          const match = user.name
+            ?.toLowerCase()
+            .includes(assignedUser?.toLowerCase());
+
+          return match;
+        });
 
       return matchesSearch && matchesAssignedUser;
     });

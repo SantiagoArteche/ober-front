@@ -8,7 +8,7 @@ import { Project } from '../models/project.model';
   providedIn: 'root',
 })
 export class ProjectService {
-  private apiUrl = `https://ober-deploy.vercel.app/api/projects`;
+  private apiUrl = `http://localhost:8000/api/projects`;
 
   constructor(private http: HttpClient) {}
 

@@ -49,7 +49,7 @@
           id="assignedUser"
           type="text"
           formControlName="assignedUser"
-          placeholder="ID del usuario"
+          placeholder="Nombre del usuario"
           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
@@ -114,7 +114,7 @@
                   *ngFor="let user of project.users.slice(0, 2)"
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                 >
-                  {{ user }}
+                  {{ user.name }}
                 </span>
                 <span
                   *ngIf="project.users.length > 2"
@@ -149,7 +149,7 @@
                   *ngFor="let task of project.tasks.slice(0, 2)"
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
                 >
-                  {{ task._id }}
+                  {{ task.name }}
                 </span>
                 <span
                   *ngIf="project.tasks.length > 2"
