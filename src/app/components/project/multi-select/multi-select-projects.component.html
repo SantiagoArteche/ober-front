@@ -1,0 +1,96 @@
+<div class="space-y-2">
+  <label for="project" class="block text-sm font-medium text-gray-700">
+    Proyecto:
+    <span *ngIf="required" class="text-red-500">*</span>
+  </label>
+
+  <div class="relative w-full" (clickOutside)="closeDropdown()">
+    <button
+      type="button"
+      (click)="toggleDropdown()"
+      class="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-h-[2.5rem]"
+    >
+      <div class="flex items-center">
+        <ng-container *ngIf="selectedProject; else placeholderText">
+          <div class="text-gray-800">
+            {{ getProjectName() }}
+          </div>
+          <button
+            *ngIf="!required"
+            type="button"
+            (click)="clearSelection($event)"
+            class="ml-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        </ng-container>
+        <ng-template #placeholderText>
+          <span class="text-gray-400">Seleccionar proyecto...</span>
+        </ng-template>
+      </div>
+      <span class="shrink-0 text-gray-400">▼</span>
+    </button>
+
+    <div
+      *ngIf="isOpen"
+      class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-300 overflow-hidden"
+    >
+      <div class="p-2">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Buscar proyecto..."
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
+      <div class="max-h-64 overflow-y-auto">
+        <div
+          *ngIf="filteredProjects.length === 0"
+          class="px-3 py-2 text-sm text-gray-500"
+        >
+          No se encontraron proyectos.
+        </div>
+
+        <div
+          *ngFor="let project of filteredProjects"
+          (click)="selectProject(project.id || project._id)"
+          class="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+        >
+          <div class="flex items-center gap-2 w-full">
+            <svg
+              *ngIf="isSelected(project.id || project._id)"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-indigo-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <div
+              *ngIf="!isSelected(project.id || project._id)"
+              class="h-4 w-4"
+            ></div>
+            <span>{{ project.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

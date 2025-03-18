@@ -1,14 +1,21 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, type OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../../../services/task.service';
-import { Task } from '../../../models/task.model';
+import type { Task } from '../../../models/task.model';
+import { MultiSelectUsersComponent } from '../../users/multi-select-users.component';
+import { MultiSelectProjectsComponent } from '../../project/multi-select/multi-select-projects.component';
 
 @Component({
   selector: 'app-edit-task',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MultiSelectUsersComponent,
+    MultiSelectProjectsComponent,
+  ],
   templateUrl: './task-edit.component.html',
 })
 export class TaskEditComponent implements OnInit {
@@ -20,12 +27,13 @@ export class TaskEditComponent implements OnInit {
   taskId: string | null = null;
   task: Task | null = null;
   isLoading = true;
+  isSubmitting = false;
+  selectedUsers: any[] = [];
+  selectedProject: any = null;
 
-  editProjectForm = this.fb.group({
+  editTaskForm = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    assignedTo: [''],
-    projectId: ['', Validators.required],
     status: ['', Validators.required],
     endDate: ['', Validators.required],
   });
@@ -44,43 +52,63 @@ export class TaskEditComponent implements OnInit {
     this.taskService.getTask(id).subscribe({
       next: (task: any) => {
         this.task = task.task;
+
         const endDate = new Date(this.task?.endDate!);
         endDate.setDate(endDate.getDate() - 1);
-        this.editProjectForm.patchValue({
+        const formattedDate = endDate.toISOString().split('T')[0];
+
+        this.editTaskForm.patchValue({
           name: this.task?.name,
           description: this.task?.description,
-          assignedTo: this.task?.assignedTo.join(', '),
-          projectId: this.task?.projectId._id,
           status: this.task?.status,
-          endDate: this.task?.endDate
-            ? new Date(endDate).toISOString().split('T')[0]
-            : '',
+          endDate: formattedDate,
         });
+
+        this.selectedUsers = this.task?.assignedTo || [];
+
+        this.selectedProject = this.task?.projectId || null;
+
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading project:', error);
+        console.error('Error loading task:', error);
         this.isLoading = false;
       },
     });
   }
 
+  onSelectedUsersChange(users: any[]): void {
+    this.selectedUsers = users;
+  }
+
+  onSelectedProjectChange(project: any): void {
+    this.selectedProject = project;
+  }
+
   onSubmit(): void {
-    if (this.editProjectForm.valid && this.taskId) {
-      const endDate = new Date(this.editProjectForm.value.endDate!);
+    if (this.editTaskForm.valid && this.taskId && this.selectedProject) {
+      this.isSubmitting = true;
+
+      const endDate = new Date(this.editTaskForm.value.endDate!);
       endDate.setDate(endDate.getDate() + 1);
+
       const updatedTask: any = {
         ...this.task,
-        name: this.editProjectForm.value.name!,
-        description: this.editProjectForm.value.description!,
-        assignedTo: this.editProjectForm.value.assignedTo
-          ? this.editProjectForm.value.assignedTo
-              ?.split(',')
-              .map((user) => user.trim())
-          : [],
-        projectId: this.editProjectForm.value.projectId,
-        status: this.editProjectForm.value.status,
-        endDate: new Date(endDate).toISOString().split('T')[0],
+        name: this.editTaskForm.value.name!,
+        description: this.editTaskForm.value.description!,
+        assignedTo: this.selectedUsers.map((user) => {
+          if (typeof user === 'string') {
+            return user;
+          }
+
+          return user._id || user.id;
+        }),
+        projectId:
+          typeof this.selectedProject === 'string'
+            ? this.selectedProject
+            : this.selectedProject._id || this.selectedProject.id,
+        status: this.editTaskForm.value.status!,
+        endDate: endDate.toISOString().split('T')[0],
       };
 
       this.taskService.updateTask(this.taskId, updatedTask).subscribe({
@@ -89,6 +117,10 @@ export class TaskEditComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error updating task:', error);
+          this.isSubmitting = false;
+        },
+        complete: () => {
+          this.isSubmitting = false;
         },
       });
     }
