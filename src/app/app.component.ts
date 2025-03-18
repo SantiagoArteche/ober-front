@@ -13,6 +13,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     MatButtonModule,
     RouterModule,
     NavbarComponent,
+
   ],
 
   templateUrl: './app.component.html',

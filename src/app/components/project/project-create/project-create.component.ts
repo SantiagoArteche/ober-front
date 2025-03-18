@@ -3,24 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../../services/project.service';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MultiSelectUsersComponent } from '../../users/multi-select-users.component';
 
 @Component({
   selector: 'app-create-project',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MultiSelectUsersComponent],
   templateUrl: './project-create.component.html',
 })
 export class ProjectCreateComponent {
@@ -28,34 +16,42 @@ export class ProjectCreateComponent {
   private projectService = inject(ProjectService);
   private router = inject(Router);
 
-  isLoading = true;
+  isSubmitting = false;
+  selectedUsers: any[] = [];
 
   createProjectForm = this.fb.group({
     name: ['', Validators.required],
-    users: [''],
   });
+
+  onSelectedUsersChange(users: any[]): void {
+    this.selectedUsers = users;
+  }
 
   onSubmit(): void {
     if (this.createProjectForm.valid) {
+      this.isSubmitting = true;
+
       const newProject: any = {
         name: this.createProjectForm.value.name!,
-        users: this.createProjectForm.value.users
-          ? this.createProjectForm.value.users
-              ?.split(',')
-              .map((user) => user.trim())
-          : [],
+        users: this.selectedUsers.map((user) => {
+          if (typeof user === 'string') {
+            return user;
+          }
+          return user._id || user.id;
+        }),
       };
 
       this.projectService.createProject(newProject).subscribe({
-        next: (newProject: any) => {
-          this.router.navigate([
-            '/projects',
-            newProject.newProject._id,
-            'view',
-          ]);
+        next: (response: any) => {
+          const projectId = response.newProject?._id || response.newProject?.id;
+          this.router.navigate(['/projects', projectId, 'view']);
         },
         error: (error) => {
-          console.error('Error updating project:', error);
+          console.error('Error creating project:', error);
+          this.isSubmitting = false;
+        },
+        complete: () => {
+          this.isSubmitting = false;
         },
       });
     }

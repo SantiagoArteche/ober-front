@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = `https://ober-deploy.vercel.app/api/auth`;
+  private apiUrl = `http://localhost:8000/api/auth`;
 
   private tokenSubject = new BehaviorSubject<string | null>(null);
   currentUser$ = this.tokenSubject.asObservable();
@@ -20,6 +20,10 @@ export class AuthService {
     if (storedToken) {
       this.tokenSubject.next(storedToken);
     }
+  }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users?limit=100&skip=0`);
   }
 
   login(email: string, password: string): Observable<string> {
