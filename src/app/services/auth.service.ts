@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
-  private apiUrl = `http://localhost:8000/api/auth`;
+  private apiUrl = `https://ober-deploy.vercel.app/api/auth`;
 
   private tokenSubject = new BehaviorSubject<string | null>(null);
   currentUser$ = this.tokenSubject.asObservable();

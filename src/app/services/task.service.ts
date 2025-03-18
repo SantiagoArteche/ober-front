@@ -8,7 +8,7 @@ import { Task } from '../models/task.model';
   providedIn: 'root',
 })
 export class TaskService {
-  private apiUrl = `http://localhost:8000/api/tasks`;
+  private apiUrl = `https://ober-deploy.vercel.app/api/tasks`;
 
   constructor(private http: HttpClient) {}
 
