@@ -5,6 +5,8 @@ import {
   Input,
   Output,
   type OnInit,
+  type OnChanges,
+  type SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,9 +27,11 @@ interface User {
   imports: [CommonModule, FormsModule, ClickOutsideDirective],
   templateUrl: './multi-select-users.component.html',
 })
-export class MultiSelectUsersComponent implements OnInit {
+export class MultiSelectUsersComponent implements OnInit, OnChanges {
   @Input() selectedUsers: any[] = [];
   @Output() selectedUsersChange = new EventEmitter<any[]>();
+  @Input() projectUsers: any[] = [];
+  @Input() filterByProject = false;
 
   private authService = inject(AuthService);
   private searchSubject = new Subject<string>();
@@ -37,6 +41,7 @@ export class MultiSelectUsersComponent implements OnInit {
   allUsers: User[] = [];
   filteredUsers: User[] = [];
   userMap: Map<string, User> = new Map();
+  availableUsers: User[] = [];
 
   ngOnInit(): void {
     this.loadUsers();
@@ -46,6 +51,37 @@ export class MultiSelectUsersComponent implements OnInit {
       .subscribe((term) => {
         this.filterUsers(term);
       });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['projectUsers'] || changes['filterByProject']) {
+      this.updateAvailableUsers();
+      this.filterUsers(this.searchTerm);
+    }
+  }
+
+  updateAvailableUsers(): void {
+    if (
+      this.filterByProject &&
+      this.projectUsers &&
+      this.projectUsers.length > 0
+    ) {
+      const projectUserIds = new Set<string>();
+
+      this.projectUsers.forEach((user) => {
+        const userId = typeof user === 'string' ? user : user.id || user._id;
+        if (userId) {
+          projectUserIds.add(userId);
+        }
+      });
+
+      this.availableUsers = this.allUsers.filter((user) => {
+        const userId = user.id || user._id;
+        return userId && projectUserIds.has(userId);
+      });
+    } else {
+      this.availableUsers = [];
+    }
   }
 
   loadUsers(): void {
@@ -61,6 +97,7 @@ export class MultiSelectUsersComponent implements OnInit {
           }
         });
 
+        this.updateAvailableUsers();
         this.filterUsers(this.searchTerm);
       },
       error: (error) => console.error('Error loading users:', error),
@@ -84,14 +121,14 @@ export class MultiSelectUsersComponent implements OnInit {
   }
 
   filterUsers(term: string): void {
-    if (!this.allUsers) return;
+    if (!this.availableUsers) return;
 
     if (!term.trim()) {
-      this.filteredUsers = this.allUsers.filter(
+      this.filteredUsers = this.availableUsers.filter(
         (user) => !this.isSelected(user.id || user._id)
       );
     } else {
-      this.filteredUsers = this.allUsers.filter((user) => {
+      this.filteredUsers = this.availableUsers.filter((user) => {
         const matchesSearch =
           user.name.toLowerCase().includes(term.toLowerCase()) ||
           user.email.toLowerCase().includes(term.toLowerCase());

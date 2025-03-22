@@ -25,6 +25,7 @@ export class TaskCreateComponent {
   isSubmitting = false;
   selectedUsers: any[] = [];
   selectedProject: any = null;
+  projectUsers: any[] = [];
 
   createTaskForm = this.fb.group({
     name: ['', Validators.required],
@@ -39,6 +40,13 @@ export class TaskCreateComponent {
 
   onSelectedProjectChange(project: any): void {
     this.selectedProject = project;
+    this.selectedUsers = [];
+
+    if (project && project.users) {
+      this.projectUsers = project.users;
+    } else {
+      this.projectUsers = [];
+    }
   }
 
   onSubmit(): void {
@@ -48,15 +56,17 @@ export class TaskCreateComponent {
       const endDate = new Date(this.createTaskForm.value.endDate!);
       endDate.setDate(endDate.getDate() + 1);
 
+      const assignedUsers = this.selectedUsers.map((user) => {
+        if (typeof user === 'string') {
+          return user;
+        }
+        return user._id || user.id || null;
+      });
+
       const newTask: any = {
         name: this.createTaskForm.value.name!,
         description: this.createTaskForm.value.description!,
-        assignedTo: this.selectedUsers.map((user) => {
-          if (typeof user === 'string') {
-            return user;
-          }
-          return user._id || user.id;
-        }),
+        assignedTo: assignedUsers,
         projectId:
           typeof this.selectedProject === 'string'
             ? this.selectedProject
