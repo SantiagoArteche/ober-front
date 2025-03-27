@@ -63,21 +63,27 @@
         </div>
       </div>
 
-      <app-multi-select-users
-        [selectedUsers]="selectedUsers"
-        (selectedUsersChange)="onSelectedUsersChange($event)"
-      ></app-multi-select-users>
+      <div class="space-y-2">
+        <app-multi-select-projects
+          [selectedProject]="selectedProject"
+          (selectedProjectChange)="onSelectedProjectChange($event)"
+          [required]="true"
+        ></app-multi-select-projects>
+        <div
+          *ngIf="!selectedProject && editTaskForm.touched"
+          class="text-sm text-red-600 -mt-4"
+        >
+          El proyecto es requerido
+        </div>
+      </div>
 
-      <app-multi-select-projects
-        [selectedProject]="selectedProject"
-        (selectedProjectChange)="onSelectedProjectChange($event)"
-        [required]="true"
-      ></app-multi-select-projects>
-      <div
-        *ngIf="!selectedProject && editTaskForm.touched"
-        class="text-sm text-red-600 -mt-4"
-      >
-        El proyecto es requerido
+      <div class="space-y-2">
+        <app-multi-select-users
+          [selectedUsers]="selectedUsers"
+          (selectedUsersChange)="onSelectedUsersChange($event)"
+          [projectUsers]="projectUsers"
+          [filterByProject]="!!selectedProject"
+        ></app-multi-select-users>
       </div>
 
       <div class="space-y-2">

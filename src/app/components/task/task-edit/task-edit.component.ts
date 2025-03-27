@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskService } from '../../../services/task.service';
+import { ProjectService } from '../../../services/project.service';
 import type { Task } from '../../../models/task.model';
 import { MultiSelectUsersComponent } from '../../users/multi-select-users.component';
 import { MultiSelectProjectsComponent } from '../../project/multi-select/multi-select-projects.component';
@@ -21,6 +22,7 @@ import { MultiSelectProjectsComponent } from '../../project/multi-select/multi-s
 export class TaskEditComponent implements OnInit {
   private fb = inject(FormBuilder);
   private taskService = inject(TaskService);
+  private projectService = inject(ProjectService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -30,6 +32,7 @@ export class TaskEditComponent implements OnInit {
   isSubmitting = false;
   selectedUsers: any[] = [];
   selectedProject: any = null;
+  projectUsers: any[] = [];
 
   editTaskForm = this.fb.group({
     name: ['', Validators.required],
@@ -66,12 +69,40 @@ export class TaskEditComponent implements OnInit {
 
         this.selectedUsers = this.task?.assignedTo || [];
 
-        this.selectedProject = this.task?.projectId || null;
+        const projectId =
+          typeof this.task?.projectId === 'string'
+            ? this.task?.projectId
+            : this.task?.projectId?._id || (this.task?.projectId as any)?.id;
+
+        if (projectId) {
+          this.loadProjectDetails(projectId);
+        } else {
+          this.isLoading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading task:', error);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  loadProjectDetails(projectId: string): void {
+    this.projectService.getProject(projectId).subscribe({
+      next: (projectData: any) => {
+        const project = projectData.project || projectData;
+
+        this.selectedProject = project;
+
+        if (project && project.users) {
+          this.projectUsers = project.users;
+          console.log('Project users loaded:', this.projectUsers);
+        }
 
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading task:', error);
+        console.error('Error loading project details:', error);
         this.isLoading = false;
       },
     });
@@ -82,7 +113,17 @@ export class TaskEditComponent implements OnInit {
   }
 
   onSelectedProjectChange(project: any): void {
+    if (this.selectedProject !== project) {
+      this.selectedUsers = [];
+    }
+
     this.selectedProject = project;
+
+    if (project && project.users) {
+      this.projectUsers = project.users;
+    } else {
+      this.projectUsers = [];
+    }
   }
 
   onSubmit(): void {
